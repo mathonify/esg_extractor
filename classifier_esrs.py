@@ -100,10 +100,10 @@ ESRS_RULES = {
 
 # --- Optional semantic fallback ---
 try:
-    from sentence_transformers import SentenceTransformer, util
-    import torch
-
-    _semantic_model = SentenceTransformer("all-MiniLM-L6-v2")
+    # from sentence_transformers import SentenceTransformer, util
+    # import torch
+    #
+    # _semantic_model = SentenceTransformer("local_model_safe/")
 
     SEMANTIC_METRICS = {
         "material_reuse_ratio": "percentage of materials that are reusable, recyclable, or recovered in the product lifecycle",
@@ -129,13 +129,15 @@ try:
     _metric_texts = list(SEMANTIC_METRICS.values())
     _metric_embeds = _semantic_model.encode(_metric_texts, convert_to_tensor=True)
 
-    def classify_metric_semantic(text: str, threshold: float = 0.45) -> str:
-        embedding = _semantic_model.encode(text, convert_to_tensor=True)
-        sims = util.cos_sim(embedding, _metric_embeds)[0]
-
-        best_idx = int(torch.argmax(sims))
-        score = float(sims[best_idx])
-        return _metric_names[best_idx] if score >= threshold else "unknown_metric"
+    def classify_metric_semantic(text: str) -> str:
+        return "unknown_metric"
+    # def classify_metric_semantic(text: str, threshold: float = 0.45) -> str:
+    #     embedding = _semantic_model.encode(text, convert_to_tensor=True)
+    #     sims = util.cos_sim(embedding, _metric_embeds)[0]
+    #
+    #     best_idx = int(torch.argmax(sims))
+    #     score = float(sims[best_idx])
+    #     return _metric_names[best_idx] if score >= threshold else "unknown_metric"
 
 except Exception as e:
     print("Semantic classification unavailable:", e)
